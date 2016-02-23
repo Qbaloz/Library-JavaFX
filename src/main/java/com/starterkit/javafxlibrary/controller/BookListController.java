@@ -7,31 +7,31 @@ import org.apache.log4j.Logger;
 import com.starterkit.javafxlibrary.dataprovider.BookProvider;
 import com.starterkit.javafxlibrary.dataprovider.data.BookTo;
 import com.starterkit.javafxlibrary.model.BookListModel;
-import com.sun.prism.impl.Disposer.Record;
-
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyLongWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.value.ObservableValue;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.Stage;
 
-public class BookListControler {
+public class BookListController {
 
 	@FXML
 	TextField titleField;
 
 	@FXML
 	Button searchButton;
-	
+
 	@FXML
 	Button deleteButton;
-	
+
 	@FXML
 	Button addButton;
 
@@ -44,13 +44,13 @@ public class BookListControler {
 	@FXML
 	TableColumn<BookTo, String> titleColumn;
 
-	private static final Logger LOG = Logger.getLogger(BookListControler.class);
+	private static final Logger LOG = Logger.getLogger(BookListController.class);
 
 	private BookProvider bookProvider = BookProvider.INSTANCE;
 
 	private final BookListModel model = new BookListModel();
 
-	public BookListControler() {
+	public BookListController() {
 
 	}
 
@@ -60,7 +60,7 @@ public class BookListControler {
 		initializeResultTable();
 		titleField.textProperty().bindBidirectional(model.titleProperty());
 		resultTable.itemsProperty().bind(model.resultProperty());
-		
+
 		model.setTitle("");
 	}
 
@@ -74,8 +74,28 @@ public class BookListControler {
 		LOG.debug("'Search' button clicked");
 		sendGetRequest();
 	}
-	
-	private void sendGetRequest(){
+
+	@FXML
+	public void deleteButtonAction(ActionEvent event) {
+		BookTo book = resultTable.getSelectionModel().getSelectedItem();
+		sendDeleteRequest(book.getId());
+	}
+
+	@FXML
+	public void addButtonAction(ActionEvent event) {
+		try {
+			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/newbook.fxml"));
+			Parent root = (Parent) fxmlLoader.load();
+			Stage stage = new Stage();
+			stage.setScene(new Scene(root));
+			stage.setTitle("Add new book");
+			stage.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void sendGetRequest() {
 		Runnable backgroundTask = new Runnable() {
 
 			@Override
@@ -97,8 +117,8 @@ public class BookListControler {
 		};
 		new Thread(backgroundTask).start();
 	}
-	
-	private void sendDeleteRequest(long id){
+
+	private void sendDeleteRequest(long id) {
 		Runnable backgroundTask = new Runnable() {
 
 			@Override
@@ -110,11 +130,5 @@ public class BookListControler {
 		};
 		new Thread(backgroundTask).start();
 	}
-	
-	@FXML
-	public void deleteButtonAction(ActionEvent event){
-		BookTo book = resultTable.getSelectionModel().getSelectedItem();
-		sendDeleteRequest(book.getId());
-	}
-	
+
 }

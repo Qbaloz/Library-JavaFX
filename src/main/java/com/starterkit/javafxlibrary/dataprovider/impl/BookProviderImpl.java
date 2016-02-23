@@ -24,4 +24,9 @@ public class BookProviderImpl implements BookProvider {
 		bookRestService.sendDELETE(id);
 	}
 
+	@Override
+	public void addBook(String jsonString) {
+		bookRestService.sendPOST(jsonString);
+	}
+
 }

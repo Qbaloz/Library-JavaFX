@@ -11,5 +11,6 @@ public interface BookProvider {
 	
 	Collection<BookTo> findBooks(String titlePrefix);
 	void deleteBook(Long id);
+	void addBook(String jsonString);
 	
 }
