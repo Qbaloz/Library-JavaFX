@@ -43,8 +43,8 @@
       </GridPane>
       <TableView fx:id="resultTable" layoutX="14.0" layoutY="115.0" prefHeight="275.0" prefWidth="470.0">
         <columns>
-          <TableColumn prefWidth="87.0" text="Id" />
-          <TableColumn prefWidth="382.0" text="Title" />
+          <TableColumn fx:id="idColumn" prefWidth="87.0" text="Id" />
+          <TableColumn fx:id="titleColumn" prefWidth="382.0" text="Title" />
         </columns>
       </TableView>
    </children>
