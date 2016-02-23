@@ -10,5 +10,6 @@ public interface BookProvider {
 	BookProvider INSTANCE = new BookProviderImpl();
 	
 	Collection<BookTo> findBooks(String titlePrefix);
+	void deleteBook(Long id);
 	
 }

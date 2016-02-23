@@ -7,10 +7,13 @@ import org.apache.log4j.Logger;
 import com.starterkit.javafxlibrary.dataprovider.BookProvider;
 import com.starterkit.javafxlibrary.dataprovider.data.BookTo;
 import com.starterkit.javafxlibrary.model.BookListModel;
+import com.sun.prism.impl.Disposer.Record;
 
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyLongWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ObservableValue;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -25,6 +28,12 @@ public class BookListControler {
 
 	@FXML
 	Button searchButton;
+	
+	@FXML
+	Button deleteButton;
+	
+	@FXML
+	Button addButton;
 
 	@FXML
 	TableView<BookTo> resultTable;
@@ -63,6 +72,10 @@ public class BookListControler {
 	@FXML
 	public void searchButtonAction(ActionEvent event) {
 		LOG.debug("'Search' button clicked");
+		sendGetRequest();
+	}
+	
+	private void sendGetRequest(){
 		Runnable backgroundTask = new Runnable() {
 
 			@Override
@@ -83,6 +96,25 @@ public class BookListControler {
 			}
 		};
 		new Thread(backgroundTask).start();
+	}
+	
+	private void sendDeleteRequest(long id){
+		Runnable backgroundTask = new Runnable() {
+
+			@Override
+			public void run() {
+				LOG.debug("backgroundTask.run() called");
+				bookProvider.deleteBook(id);
+				sendGetRequest();
+			}
+		};
+		new Thread(backgroundTask).start();
+	}
+	
+	@FXML
+	public void deleteButtonAction(ActionEvent event){
+		BookTo book = resultTable.getSelectionModel().getSelectedItem();
+		sendDeleteRequest(book.getId());
 	}
 	
 }
