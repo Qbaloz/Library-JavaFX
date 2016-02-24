@@ -28,7 +28,6 @@ public class NewBookController {
 	@FXML
 	TextField lastNameField;
 	
-	
 	@FXML
 	Button addButton;
 	
@@ -58,13 +57,18 @@ public class NewBookController {
 	
 	@FXML
 	public void cancelButtonAction(ActionEvent event) {
-	    Stage stage = (Stage) cancelButton.getScene().getWindow();
-	    stage.close();
+	    closeWindow();
 	}
 	
 	@FXML
 	public void addButtonAction(ActionEvent event) {
 		sendPostRequest();
+	    closeWindow();
+	}
+
+	private void closeWindow() {
+		Stage stage = (Stage) cancelButton.getScene().getWindow();
+	    stage.close();
 	}
 	
 	private void sendPostRequest() {

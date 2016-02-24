@@ -16,6 +16,8 @@ public class BookListModel {
 	private final StringProperty title = new SimpleStringProperty();
 	private final ListProperty<BookTo> result = new SimpleListProperty<>(
 			FXCollections.observableList(new ArrayList<BookTo>()));
+	private final StringProperty titleLabel = new SimpleStringProperty();
+	private final StringProperty authorsLabel = new SimpleStringProperty();
 
 	public final String getTitle() {
 		return title.get();
@@ -39,6 +41,30 @@ public class BookListModel {
 
 	public ListProperty<BookTo> resultProperty() {
 		return result;
+	}
+	
+	public final String getTitleLabel() {
+		return titleLabel.get();
+	}
+
+	public final void setTitleLabel(String value) {
+		titleLabel.set(value);
+	}
+
+	public StringProperty titleLabelProperty() {
+		return titleLabel;
+	}
+	
+	public final String getAuthorsLabel() {
+		return authorsLabel.get();
+	}
+
+	public final void setAuthorsLabel(String value) {
+		authorsLabel.set(value);
+	}
+
+	public StringProperty authorsLabelProperty() {
+		return authorsLabel;
 	}
 
 }

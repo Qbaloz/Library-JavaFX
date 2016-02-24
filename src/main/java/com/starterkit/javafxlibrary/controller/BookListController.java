@@ -10,21 +10,31 @@ import com.starterkit.javafxlibrary.model.BookListModel;
 import javafx.application.Platform;
 import javafx.beans.property.ReadOnlyLongWrapper;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 public class BookListController {
 
 	@FXML
 	TextField titleField;
+	
+	@FXML
+	Label titleLabel;
+	
+	@FXML
+	Label authorsLabel;
 
 	@FXML
 	Button searchButton;
@@ -60,13 +70,35 @@ public class BookListController {
 		initializeResultTable();
 		titleField.textProperty().bindBidirectional(model.titleProperty());
 		resultTable.itemsProperty().bind(model.resultProperty());
+		titleLabel.textProperty().bindBidirectional(model.titleLabelProperty());
+		authorsLabel.textProperty().bindBidirectional(model.authorsLabelProperty());
 
 		model.setTitle("");
 	}
 
 	private void initializeResultTable() {
 		idColumn.setCellValueFactory(cellData -> new ReadOnlyLongWrapper(cellData.getValue().getId()));
-		titleColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTitle()));
+		titleColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getTitle())); 
+		
+		updateBookDetails();
+	}
+
+	private void updateBookDetails() {
+		resultTable.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<BookTo>() {
+
+			@Override
+			public void changed(ObservableValue<? extends BookTo> observable, BookTo oldValue, BookTo newValue) {
+				LOG.debug(newValue + " selected");
+				Platform.runLater(new Runnable() {
+					  public void run() {
+						if(newValue != null){
+						    titleLabel.setText(newValue.getTitle());
+						    authorsLabel.setText(newValue.getAuthors().toString());
+						}
+					  }
+					});
+			}
+		});
 	}
 
 	@FXML
@@ -78,18 +110,28 @@ public class BookListController {
 	@FXML
 	public void deleteButtonAction(ActionEvent event) {
 		BookTo book = resultTable.getSelectionModel().getSelectedItem();
-		sendDeleteRequest(book.getId());
+		if(book != null){
+			sendDeleteRequest(book.getId());
+		}
 	}
 
 	@FXML
 	public void addButtonAction(ActionEvent event) {
+		openNewBookDialog();
+	}
+
+	private void openNewBookDialog() {
 		try {
 			FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("/fxml/newbook.fxml"));
 			Parent root = (Parent) fxmlLoader.load();
+			root.getStylesheets().add("/styles/darktheme.css");
 			Stage stage = new Stage();
 			stage.setScene(new Scene(root));
+			stage.initOwner(resultTable.getScene().getWindow());
+			stage.initModality(Modality.WINDOW_MODAL);
 			stage.setTitle("Add new book");
-			stage.show();
+			stage.showAndWait();
+			sendGetRequest();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
